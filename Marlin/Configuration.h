@@ -2151,7 +2151,7 @@
  * Use G29 repeatedly, adjusting the Z height at each point with movement commands
  * or (with LCD_BED_LEVELING) the LCD controller.
  */
-#if NONE(ABL_EZABL, ABL_NCSW, ABL_BLTOUCH, ABL_TOUCH_MI, MachineCR6, MachineCR6Max, MachineCR10Smart, MachineCR10SmartPro)
+#if NONE(ABL_EZABL, ABL_NCSW, ABL_BLTOUCH, ABL_TOUCH_MI, MachineCR6, MachineCR6Max, MachineCR10Smart, MachineCR10SmartPro, MachineCR30)
   #define PROBE_MANUALLY
   #define MANUAL_PROBE_START_Z 0.2
 #endif
@@ -3092,7 +3092,7 @@
 //#define AUTO_BED_LEVELING_LINEAR
   #if ENABLED(ABL_UBL)
     #define AUTO_BED_LEVELING_UBL
-  #elif BOTH(PROBE_MANUALLY, FORCE10SPRODISPLAY)
+  #elif ENABLED(PROBE_MANUALLY) && ANY(MachineEnder3Touchscreen, FORCE10SPRODISPLAY)
     #define MESH_BED_LEVELING
   #elif !BOTH(OrigLA, MachineCR10Orig) && DISABLED(MachineCR30)
     #define AUTO_BED_LEVELING_BILINEAR
@@ -3925,7 +3925,7 @@
   #define ENDER2_STOCKDISPLAY
 #elif ANY(MachineCR20, MachineCR2020)
   #define MKS_MINI_12864
-#elif ANY(MachineEnder3V2, FORCEV2DISPLAY, MachineEnder3S1)
+#elif ANY(MachineEnder3V2, FORCEV2DISPLAY, MachineEnder3S1) && DISABLED(MachineEnder3Touchscreen)
   #define DWIN_MARLINUI_PORTRAIT
 #elif ANY(OrigLCD, MachineCR10Orig, MachineEnder3Pro422, MachineEnder3Pro427, MachineEnder3Max, SKRMiniE3V2, SKRE3Turbo) && NONE(GraphicLCD, MachineEnder3Touchscreen, FORCE10SPRODISPLAY)
   #define CR10_STOCKDISPLAY
