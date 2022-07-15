@@ -28,7 +28,7 @@
 #include "env_validate.h"
 
 #if HAS_MULTI_HOTEND || E_STEPPERS > 1
-  #error "Creality V4 only supports one hotend / E-stepper. Comment out this line to continue."
+  #error "Creality v4 only supports 1 hotend / E stepper."
 #endif
 
 #ifndef BOARD_INFO_NAME
@@ -58,9 +58,9 @@
 #if ENABLED(IIC_BL24CXX_EEPROM)
   #define IIC_EEPROM_SDA                    PA11
   #define IIC_EEPROM_SCL                    PA12
-  #define MARLIN_EEPROM_SIZE               0x800  // 2Kb (24C16)
+  #define MARLIN_EEPROM_SIZE               0x800  // 2K (24C16)
 #elif ENABLED(SDCARD_EEPROM_EMULATION)
-  #define MARLIN_EEPROM_SIZE               0x800  // 2Kb
+  #define MARLIN_EEPROM_SIZE               0x800  // 2K
 #endif
 
 //
