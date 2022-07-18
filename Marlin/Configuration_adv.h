@@ -520,11 +520,13 @@
  * The fan turns on automatically whenever any driver is enabled and turns
  * off (or reduces to idle speed) shortly after drivers are turned off.
  */
-#if ENABLED(SKRMiniE3V2)
+#if ANY(SKRMiniE3V2, SKRMiniE3V3)
   #define USE_CONTROLLER_FAN
 #endif
 #if ENABLED(USE_CONTROLLER_FAN)
-  //#define CONTROLLER_FAN_PIN -1           // Set a custom pin for the controller fan
+  #if ENABLED(SKRMiniE3V3)
+    #define CONTROLLER_FAN_PIN FAN2_PIN           // Set a custom pin for the controller fan
+  #endif
   //#define CONTROLLER_FAN_USE_Z_ONLY       // With this option only the Z axis is considered
   //#define CONTROLLER_FAN_IGNORE_Z         // Ignore Z stepper. Useful when stepper timeout is disabled.
   #define CONTROLLERFAN_SPEED_MIN         0 // (0-255) Minimum speed. (If set below this value the fan is turned off.)
@@ -535,7 +537,7 @@
   // Use TEMP_SENSOR_BOARD as a trigger for enabling the controller fan
   //#define CONTROLLER_FAN_MIN_BOARD_TEMP 40  // (°C) Turn on the fan if the board reaches this temperature
 
-  //#define CONTROLLER_FAN_EDITABLE         // Enable M710 configurable settings
+  #define CONTROLLER_FAN_EDITABLE         // Enable M710 configurable settings
   #if ENABLED(CONTROLLER_FAN_EDITABLE)
     #define CONTROLLER_FAN_MENU             // Enable the Controller Fan submenu
   #endif
@@ -930,7 +932,7 @@
    * differs, a mode set eeprom write will be completed at initialization.
    * Use the option below to force an eeprom write to a V3.1 probe regardless.
    */
-  #if NONE(SKR13, SKR14, SKR14Turbo, SKRPRO11, SKRMiniE3V2, MachineEnder3S1, Creality422, Creality427, MachineEnder6, MachineEnder7, MachineSermoonD1, MachineCR30, MachineCR6, MachineCR6Max, MachineCR10SmartPro, MachineEnder2Pro)
+  #if NONE(SKR13, SKR14, SKR14Turbo, SKRPRO11, SKRMiniE3V2, SKRMiniE3V3, MachineEnder3S1, Creality422, Creality427, MachineEnder6, MachineEnder7, MachineSermoonD1, MachineCR30, MachineCR6, MachineCR6Max, MachineCR10SmartPro, MachineEnder2Pro)
     #define BLTOUCH_SET_5V_MODE
   #endif
   /**
@@ -1448,7 +1450,7 @@
       #define LED_USER_PRESET_BLUE         0  // User defined BLUE value
       #define LED_USER_PRESET_WHITE      255  // User defined WHITE value
       #define LED_USER_PRESET_BRIGHTNESS 255  // User defined intensity
-      //#define LED_USER_PRESET_STARTUP       // Have the printer display the user preset color on startup
+      #define LED_USER_PRESET_STARTUP       // Have the printer display the user preset color on startup
     #endif
     #if ENABLED(NEO2_COLOR_PRESETS)
       #define NEO2_USER_PRESET_RED        255  // User defined RED value
@@ -2418,7 +2420,7 @@
 
 // The ASCII buffer for serial input
 #define MAX_CMD_SIZE 96
-#if ANY(MachineCR10Orig, SKRMiniE3V2, MachineLargeROM) //melzi has more ram than a 2560
+#if ANY(MachineCR10Orig, SKRMiniE3V2, SKRMiniE3V3, MachineLargeROM) //melzi has more ram than a 2560
   #define BUFSIZE 16
 #else
   #define BUFSIZE 4
@@ -2474,7 +2476,7 @@
  * Currently handles M108, M112, M410, M876
  * NOTE: Not yet implemented for all platforms.
  */
-#if NONE(SKRPRO11, SKRMiniE3V2)
+#if NONE(SKRPRO11)
   #define EMERGENCY_PARSER
 #endif
 
@@ -4653,7 +4655,7 @@
   //
   // M43 - display pin status, toggle pins, watch pins, watch endstops & toggle LED, test servo probe
   //
-  #define PINS_DEBUGGING
+  //#define PINS_DEBUGGING
 //#endif
 
 // Enable Marlin dev mode which adds some special commands

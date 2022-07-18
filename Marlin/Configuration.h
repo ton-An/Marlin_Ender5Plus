@@ -45,7 +45,7 @@
 // See video here : https://www.youtube.com/watch?v=fIl5X2ffdyo
 
 //#define MachineEnder2
-//#define MachineEnder3
+#define MachineEnder3
 //#define MachineEnder5
 //#define MachineMini
 //#define MachineCR10
@@ -122,7 +122,7 @@
 //#define ABL_EZABL // TH3D EZABL or Any NO Sensor
 //#define ABL_EZABL12MM
 //#define ABL_NCSW //Creality ABL or Any NC Sensor
-//#define ABL_BLTOUCH
+#define ABL_BLTOUCH
 //#define ABL_TOUCH_MI // Uncomment ABL_TOUCH_MI to use Touch-MI sensor by hotends.fr
 
 //#define Creality42XUseZMin // Use ZMin pin for probe on Creality 422 and 427 boards
@@ -141,7 +141,7 @@
 //#define Big_UI // Lightweight status screen, saves CPU cycles
 
 // CR-6 or Ender touchscreen kit
-//#define MachineEnder3Touchscreen
+#define MachineEnder3Touchscreen
 
 // Ender 3 V2 rotary Dial LCD
 //#define FORCEV2DISPLAY
@@ -200,8 +200,16 @@
 //#define SKR13 // 32 bit board - assumes 2208 drivers
 //#define SKR14
 //#define SKR14Turbo
+
+
+//#define SKR2
+//#define SKR3
+
 //#define SKRPRO11
 //#define SKRE3Turbo
+
+#define SKRMiniE3V3
+
 //#define SKR_CR6 // Specialty SKR board for CR6
 //#define SKR_Switch_Extruder_1 // Switch pins in PINS file for SKRE3Turbo
 
@@ -357,17 +365,16 @@
   #define ABL_BLTOUCH
 #endif
 
-#if ENABLED(SKRMiniE3V2)
+#if ANY(SKRMiniE3V2, SKRMiniE3V3, SKRE3Turbo)
   #define SKR_2209
   #define SKR_UART
-  #define OrigLCD
+  #if NONE(FORCE10SPRODISPLAY, MachineEnder3Touchscreen, FORCEV2DISPLAY)
+    #define OrigLCD
+  #else
+    #define NO_CONTROLLER_CUSTOM_WIRING_WARNING
+  #endif
 #endif
 
-#if ENABLED(SKRE3Turbo)
-  #define SKR_2209
-  #define SKR_UART
-  #define OrigLCD
-#endif
 
 #if ENABLED(CrealityTitan)
   #define E3DTitan
@@ -459,7 +466,7 @@
   #define Z_STOP_PIN 19
 #endif
 
-#if ANY(MachineEnder2, MachineEnder3, MachineEnder5, MachineCR10, MachineMini) &&NONE(SKR13, SKR14, SKR14Turbo, SKRPRO11, SKRE3Turbo, SKRMiniE3V2, Creality422, Creality427, Melzi_To_SBoardUpgrade)
+#if ANY(MachineEnder2, MachineEnder3, MachineEnder5, MachineCR10, MachineMini) &&NONE(SKR13, SKR14, SKR14Turbo, SKRPRO11, SKRE3Turbo, SKRMiniE3V2, SKRMiniE3V3, Creality422, Creality427, Melzi_To_SBoardUpgrade)
   #define MachineCR10Orig
 #endif
 
@@ -627,7 +634,7 @@
   #define BedDC
 #endif
 
-#if ANY(SKR13, SKR14, SKR14Turbo, SKRPRO11, SKRE3Turbo, MachineEnder3V2, MachineEnder3S1, Creality422, Creality427, MachineEnder6, MachineSermoonD1, MachineCR30, MachineCR6, MachineCR6Max, MachineEnder7, MachineCR10Smart, MachineCR10SmartPro)
+#if ANY(SKR13, SKR14, SKR14Turbo, SKRPRO11, SKRE3Turbo, SKRMiniE3V3, MachineEnder3V2, MachineEnder3S1, Creality422, Creality427, MachineEnder6, MachineSermoonD1, MachineCR30, MachineCR6, MachineCR6Max, MachineEnder7, MachineCR10Smart, MachineCR10SmartPro)
   #define MachineLargeROM
 #endif
 
@@ -653,7 +660,7 @@
  *
  * :[-1, 0, 1, 2, 3, 4, 5, 6, 7]
  */
-#if ANY(SKR13, SKR14, SKR14Turbo, SKRPRO11, SKRMiniE3V2, SKRE3Turbo, SKR_CR6)
+#if ANY(SKR13, SKR14, SKR14Turbo, SKRPRO11, SKRMiniE3V2, SKRMiniE3V3, SKRE3Turbo, SKR_CR6)
   #define SERIAL_PORT -1
 #elif ANY(MachineCR10Smart, MachineCR10SmartPro, MachineEnder2Pro)
   #define SERIAL_PORT 1
@@ -674,8 +681,14 @@
   #define SERIAL_CATCHALL -1
 #elif ANY(SKR13, SKR14, SKR14Turbo, SKRPRO11, SKRE3Turbo) && NONE(MachineEnder3V2, MachineEnder3S1, MachineEnder3Touchscreen, FORCEV2DISPLAY)
   #define SERIAL_PORT_2 0
-#elif ENABLED(SKRMiniE3V2)
-  #define SERIAL_PORT_2 2
+#elif ANY(SKRMiniE3V2, SKRMiniE3V3)
+  #if ANY(FORCE10SPRODISPLAY, MachineEnder3Touchscreen)
+    #define LCD_SERIAL_PORT 2
+    #define LCD_BAUDRATE 115200
+    #define SERIAL_CATCHALL -1
+  #elif DISABLED(FORCEV2DISPLAY)
+    #define SERIAL_PORT_2 2
+  #endif
 #elif ANY(MachineEnder3V2, MachineEnder3S1) && ANY(FORCEV2DISPLAY, SKRE3Turbo)
   #define LCD_SERIAL_PORT 1
   #define LCD_BAUDRATE 115200
@@ -750,6 +763,8 @@
     #define MOTHERBOARD BOARD_BTT_SKR_PRO_V1_1
   #elif ENABLED(SKRMiniE3V2)
     #define MOTHERBOARD BOARD_BTT_SKR_MINI_E3_V2_0
+  #elif ENABLED(SKRMiniE3V3)
+    #define MOTHERBOARD BOARD_BTT_SKR_MINI_E3_V3_0
   #elif ENABLED(SKRE3Turbo)
     #define MOTHERBOARD BOARD_BTT_SKR_E3_TURBO
   #elif ENABLED(MachineEnder6)
@@ -809,7 +824,7 @@
  * :['A4988', 'A5984', 'DRV8825', 'LV8729', 'L6470', 'L6474', 'POWERSTEP01', 'TB6560', 'TB6600', 'TMC2100', 'TMC2130', 'TMC2130_STANDALONE', 'TMC2160', 'TMC2160_STANDALONE', 'TMC2208', 'TMC2208_STANDALONE', 'TMC2209', 'TMC2209_STANDALONE', 'TMC26X', 'TMC26X_STANDALONE', 'TMC2660', 'TMC2660_STANDALONE', 'TMC5130', 'TMC5130_STANDALONE', 'TMC5160', 'TMC5160_STANDALONE']
  */
 
-#if (ANY(SKR13, SKR14, SKR14Turbo, SKRPRO11, CrealitySilentBoard) || ANY(MachineCR10SV2, MachineEnder3S1, MachineCR10SPro, MachineCR10SProV2, MachineCR10Max, MachineCR5, SKRMiniE3V2, MachineCR6, MachineCR6Max, MachineEnder6, MachineEnder7, MachineSermoonD1, MachineCR30, MachineCR10Smart, MachineCR10SmartPro)) && DISABLED(SKR_UART)
+#if (ANY(SKR13, SKR14, SKR14Turbo, SKRPRO11, CrealitySilentBoard) || ANY(MachineCR10SV2, MachineEnder3S1, MachineCR10SPro, MachineCR10SProV2, MachineCR10Max, MachineCR5, SKRMiniE3V2, SKRMiniE3V3, MachineCR6, MachineCR6Max, MachineEnder6, MachineEnder7, MachineSermoonD1, MachineCR30, MachineCR10Smart, MachineCR10SmartPro)) && DISABLED(SKR_UART)
   #if ENABLED(SKR_2209)
     #define X_DRIVER_TYPE  TMC2209_STANDALONE
     #define Y_DRIVER_TYPE  TMC2209_STANDALONE
@@ -841,7 +856,7 @@
       #define E1_DRIVER_TYPE TMC2208_STANDALONE
     #endif
   #endif
-#elif ANY(SKR13, SKR14, SKR14Turbo, SKRPRO11, SKRMiniE3V2, SKRE3Turbo) && ENABLED(SKR_UART)
+#elif ANY(SKR13, SKR14, SKR14Turbo, SKRPRO11, SKRMiniE3V2, SKRMiniE3V3, SKRE3Turbo) && ENABLED(SKR_UART)
   #if ENABLED(SKR_2209)
     #define X_DRIVER_TYPE  TMC2209
     #define Y_DRIVER_TYPE  TMC2209
@@ -2742,7 +2757,7 @@
   #define INVERT_Z_DIR true
   #define INVERT_E0_DIR true
   #define INVERT_E1_DIR false
-#elif ANY(MachineCR10Orig, SKR13, SKR14, SKR14Turbo, SKRMiniE3V2, SKRE3Turbo) && DISABLED(SKR_ReverseSteppers)
+#elif ANY(MachineCR10Orig, SKR13, SKR14, SKR14Turbo, SKRMiniE3V2, SKRMiniE3V3, SKRE3Turbo) && DISABLED(SKR_ReverseSteppers)
   #define INVERT_X_DIR true
   #define INVERT_Y_DIR true
   #if ANY(MachineEnder5Plus, MachineCR2020)
@@ -2758,7 +2773,7 @@
     #define INVERT_E1_DIR false
   #endif
 #else
-  #if ANY(MachineCR10Orig, SKR13, SKR14, SKR14Turbo, SKRMiniE3V2, SKRE3Turbo) && ENABLED(SKR_ReverseSteppers) && ENABLED(MachineEnder6)
+  #if ANY(MachineCR10Orig, SKR13, SKR14, SKR14Turbo, SKRMiniE3V2, SKRMiniE3V3, SKRE3Turbo) && ENABLED(SKR_ReverseSteppers) && ENABLED(MachineEnder6)
     #define INVERT_X_DIR true
     #define INVERT_Y_DIR false
   #else
@@ -4096,7 +4111,7 @@
   #define DWIN_MARLINUI_PORTRAIT
 #elif ANY(OrigLCD, MachineCR10Orig, MachineEnder3Pro422, MachineEnder3Pro427, MachineEnder3Max, SKRMiniE3V2, SKRE3Turbo) && NONE(GraphicLCD, MachineEnder3Touchscreen, FORCE10SPRODISPLAY)
   #define CR10_STOCKDISPLAY
-#elif NONE(MachineCR10SPro, MachineCRX, MachineEnder5Plus, MachineCR10Max, OrigLCD, MachineCR10Orig, SKRMiniE3V2, FORCE10SPRODISPLAY, MachineCR6, MachineCR6Max, MachineCR10Smart, MachineCR10SmartPro, MachineEnder3Touchscreen) || ENABLED(GraphicLCD)
+#elif NONE(MachineCR10SPro, MachineCRX, MachineEnder5Plus, MachineCR10Max, OrigLCD, MachineCR10Orig, SKRMiniE3V2, SKRMiniE3V3, FORCE10SPRODISPLAY, MachineCR6, MachineCR6Max, MachineCR10Smart, MachineCR10SmartPro, MachineEnder3Touchscreen) || ENABLED(GraphicLCD)
   #define REPRAP_DISCOUNT_FULL_GRAPHIC_SMART_CONTROLLER
 #endif
 //
@@ -4469,7 +4484,7 @@
 // Third-party or vendor-customized controller interfaces.
 // Sources should be installed in 'src/lcd/extui'.
 //
-#if ANY(MachineCR10SPro, MachineCRX, MachineEnder5Plus, MachineCR10Max, MachineEnder6, MachineCR5, MachineEnder7, MachineSermoonD1, MachineCR10Smart, MachineCR10SmartPro) && (NONE(GraphicLCD, SKRMiniE3V2, OrigLCD) || ENABLED(FORCE10SPRODISPLAY))
+#if ANY(MachineCR10SPro, MachineCRX, MachineEnder5Plus, MachineCR10Max, MachineEnder6, MachineCR5, MachineEnder7, MachineSermoonD1, MachineCR10Smart, MachineCR10SmartPro) && (NONE(GraphicLCD, SKRMiniE3V2, SKRMiniE3V3, OrigLCD) || ENABLED(FORCE10SPRODISPLAY))
   #ifndef FORCE10SPRODISPLAY
     #define FORCE10SPRODISPLAY
   #endif
@@ -4743,15 +4758,14 @@
 // Support for Adafruit NeoPixel LED driver
 //#define NEOPIXEL_LED
 #if ENABLED(NEOPIXEL_LED)
-  #define NEOPIXEL_TYPE          NEO_GRBW // NEO_GRBW, NEO_RGBW, NEO_GRB, NEO_RBG, etc.
-                                          // See https://github.com/adafruit/Adafruit_NeoPixel/blob/master/Adafruit_NeoPixel.h
-  //#define NEOPIXEL_PIN                4 // LED driving pin
-  //#define NEOPIXEL2_TYPE  NEOPIXEL_TYPE
-  //#define NEOPIXEL2_PIN               5
-  #define NEOPIXEL_PIXELS              30 // Number of LEDs in the strip. (Longest strip when NEOPIXEL2_SEPARATE is disabled.)
-  #define NEOPIXEL_IS_SEQUENTIAL          // Sequential display for temperature change - LED by LED. Disable to change all LEDs at once.
-  #define NEOPIXEL_BRIGHTNESS         127 // Initial brightness (0-255)
-  //#define NEOPIXEL_STARTUP_TEST         // Cycle through colors at startup
+  #define NEOPIXEL_TYPE   NEO_RGB // NEO_GRBW / NEO_GRB - four/three channel driver type (defined in Adafruit_NeoPixel.h)
+  //#define NEOPIXEL_PIN     4     // LED driving pin
+  //#define NEOPIXEL2_TYPE NEOPIXEL_TYPE
+  //#define NEOPIXEL2_PIN    5
+  #define NEOPIXEL_PIXELS 30       // Number of LEDs in the strip. (Longest strip when NEOPIXEL2_SEPARATE is disabled.)
+  #define NEOPIXEL_IS_SEQUENTIAL   // Sequential display for temperature change - LED by LED. Disable to change all LEDs at once.
+  #define NEOPIXEL_BRIGHTNESS 127  // Initial brightness (0-255)
+  #define NEOPIXEL_STARTUP_TEST  // Cycle through colors at startup
 
   // Support for second Adafruit NeoPixel LED driver controlled with M150 S1 ...
   //#define NEOPIXEL2_SEPARATE
