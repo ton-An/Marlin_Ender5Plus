@@ -45,7 +45,7 @@
 // See video here : https://www.youtube.com/watch?v=fIl5X2ffdyo
 
 //#define MachineEnder2
-#define MachineEnder3
+//#define MachineEnder3
 //#define MachineEnder5
 //#define MachineMini
 //#define MachineCR10
@@ -122,7 +122,7 @@
 //#define ABL_EZABL // TH3D EZABL or Any NO Sensor
 //#define ABL_EZABL12MM
 //#define ABL_NCSW //Creality ABL or Any NC Sensor
-#define ABL_BLTOUCH
+//#define ABL_BLTOUCH
 //#define ABL_TOUCH_MI // Uncomment ABL_TOUCH_MI to use Touch-MI sensor by hotends.fr
 
 //#define Creality42XUseZMin // Use ZMin pin for probe on Creality 422 and 427 boards
@@ -141,7 +141,7 @@
 //#define Big_UI // Lightweight status screen, saves CPU cycles
 
 // CR-6 or Ender touchscreen kit
-#define MachineEnder3Touchscreen
+//#define MachineEnder3Touchscreen
 
 // Ender 3 V2 rotary Dial LCD
 //#define FORCEV2DISPLAY
@@ -208,7 +208,7 @@
 //#define SKRPRO11
 //#define SKRE3Turbo
 
-#define SKRMiniE3V3
+//#define SKRMiniE3V3
 
 //#define SKR_CR6 // Specialty SKR board for CR6
 //#define SKR_Switch_Extruder_1 // Switch pins in PINS file for SKRE3Turbo
