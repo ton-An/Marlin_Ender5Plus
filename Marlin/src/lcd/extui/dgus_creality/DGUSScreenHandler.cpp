@@ -932,15 +932,15 @@ uint16_t CreateRgb(double h, double s, double v) {
 
 #if HAS_BED_PROBE
   void DGUSScreenHandler::UpdateMeshValue(const int8_t x, const int8_t y, const float z) {
-    SERIAL_ECHOPGM("X", x);
-    SERIAL_ECHOPGM(" Y", y);
-    SERIAL_ECHO(" Z");
-    SERIAL_ECHO_F(z, 4);
+    //SERIAL_ECHOPGM("X", x);
+    //SERIAL_ECHOPGM(" Y", y);
+    //SERIAL_ECHO(" Z");
+    //SERIAL_ECHO_F(z, 4);
 
   // Determine the screen X and Y value
   if (x % SkipMeshPoint != 0 || y % SkipMeshPoint != 0) {
     // Skip this point
-    SERIAL_ECHOLN("");
+    //SERIAL_ECHOLN("");
     return;
   }
 
@@ -961,12 +961,12 @@ uint16_t CreateRgb(double h, double s, double v) {
       // If we don't accidently overshoot to the next number, trick the display by upping the number 0.0001 💩
       displayZ += correctionFactor;
 
-      SERIAL_ECHO(" displayZ: ");
-      SERIAL_ECHO_F(z, 4);
+      //SERIAL_ECHO(" displayZ: ");
+      //SERIAL_ECHO_F(z, 4);
     }
   }
 
-  SERIAL_ECHOLN("");
+  //SERIAL_ECHOLN("");
 
   dgusdisplay.WriteVariable(vpAddr, displayZ);
 
