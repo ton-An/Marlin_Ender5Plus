@@ -134,8 +134,8 @@ namespace ExtUI {
 #define	BedPreheat			0x103A // Setpoint
 #define	Bedtemp				0x103C // Actual
 
-#define e2Temp      0x104E
-#define e2Preheat   0x1050
+#define e2Temp      0x1050
+#define e2Preheat   0x104E
 
 #define	AutoZeroIcon		0x1042
 #define	AutoLevelIcon		0x1045
@@ -176,11 +176,6 @@ namespace ExtUI {
 #define DisplayStandbyEnableIndicator 0x1146
 #define DisplayStandbySeconds 0x1148
 
-//#if ANY(MachineCR10SPro, MachineEnder5Plus, MachineCR10Max) || ENABLED(FORCE10SPRODISPLAY)
-//  #define StatusMessageString 0x3000
-//#else
-//  #define StatusMessageString 0x20E8
-//#endif
 #define StatusMessageString 0x2064
 
 #if defined(TARGET_STM32F4)

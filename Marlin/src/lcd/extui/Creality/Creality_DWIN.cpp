@@ -109,10 +109,12 @@ void onStartup()
 	rtscheck.RTS_SndData(getActualTemp_celsius(H0), NozzleTemp);
   #if HAS_MULTI_HOTEND
 	  rtscheck.RTS_SndData(getActualTemp_celsius(H1), e2Temp);
+  #else
+    rtscheck.RTS_SndData(0, e2Temp);
   #endif
 	rtscheck.RTS_SndData(getActualTemp_celsius(BED), Bedtemp);
 	/***************transmit Fan speed to screen*****************/
-  rtscheck.RTS_SndData(getActualFan_percent(), FanKeyIcon);
+  rtscheck.RTS_SndData(getActualFan_percent((fan_t)getActiveTool()), FanKeyIcon);
 
 
 	/***************transmit Printer information to screen*****************/
@@ -173,15 +175,18 @@ void onIdle()
   }
 
   // Always send temperature data
-  rtscheck.RTS_SndData(getActualTemp_celsius(H0), NozzleTemp);
+  rtscheck.RTS_SndData(getActualTemp_celsius(getActiveTool()), NozzleTemp);
 	rtscheck.RTS_SndData(getActualTemp_celsius(BED), Bedtemp);
-  rtscheck.RTS_SndData(getTargetTemp_celsius(H0), NozzlePreheat);
+  rtscheck.RTS_SndData(getTargetTemp_celsius(getActiveTool()), NozzlePreheat);
 	rtscheck.RTS_SndData(getTargetTemp_celsius(BED), BedPreheat);
   #if HAS_MULTI_HOTEND
 	  rtscheck.RTS_SndData(getActualTemp_celsius(H1), e2Temp);
     rtscheck.RTS_SndData(getTargetTemp_celsius(H1), e2Preheat);
 
     rtscheck.RTS_SndData(((uint8_t)getActiveTool() + 1), ActiveToolVP);
+  #else
+    rtscheck.RTS_SndData(0, e2Temp);
+    rtscheck.RTS_SndData(0, e2Preheat);
   #endif
 
   if(awaitingUserConfirm() && (lastPauseMsgState!=ExtUI::pauseModeStatus || userConfValidation > 99))
@@ -281,7 +286,7 @@ void onIdle()
       break;
     case 6:
       if(!commandsInQueue()) {
-        setAxisPosition_mm(LEVEL_CORNERS_HEIGHT, (axis_t)Z);
+        setAxisPosition_mm(BED_TRAMMING_HEIGHT, (axis_t)Z);
         waitway = 0;
       }
       break;
@@ -325,7 +330,7 @@ void onIdle()
   if (startprogress == 0)
   {
     startprogress += 25;
-          delay_ms(300); // Delay to show bootscreen
+          delay_ms(3000); // Delay to show bootscreen
   }
   else if( startprogress < 250)
   {
@@ -350,7 +355,7 @@ void onIdle()
 
   if (isPrinting())
 	{
-    rtscheck.RTS_SndData(getActualFan_percent(), FanKeyIcon);
+    rtscheck.RTS_SndData(getActualFan_percent((fan_t)getActiveTool()), FanKeyIcon);
 		rtscheck.RTS_SndData(getProgress_seconds_elapsed() / 3600, Timehour);
 		rtscheck.RTS_SndData((getProgress_seconds_elapsed() % 3600) / 60, Timemin);
 		if (getProgress_percent() > 0)
@@ -404,6 +409,12 @@ void onIdle()
     rtscheck.RTS_SndData(((unsigned int)getAxisMaxJerk_mm_s(Z)*100), Jerk_Z);
     rtscheck.RTS_SndData(((unsigned int)getAxisMaxJerk_mm_s(E0)*100), Jerk_E);
 
+    #if HAS_HOTEND_OFFSET
+      rtscheck.RTS_SndData(((unsigned int)getNozzleOffset_mm(X, E1)*10), T2Offset_X);
+      rtscheck.RTS_SndData(((unsigned int)getNozzleOffset_mm(Y, E1)*10), T2Offset_Y);
+      rtscheck.RTS_SndData(((unsigned int)getNozzleOffset_mm(Z, E1)*10), T2Offset_Z);
+      rtscheck.RTS_SndData((unsigned int)(getAxisSteps_per_mm(E1) * 10), T2StepMM_E);
+    #endif
 
     #if HAS_BED_PROBE
       rtscheck.RTS_SndData(getProbeOffset_mm(X) * 100, ProbeOffset_X);
@@ -433,11 +444,11 @@ void onIdle()
 	{
 		unsigned int IconTemp;
 
-		IconTemp = getActualTemp_celsius(H0) * 100 / getTargetTemp_celsius(H0);
+		IconTemp = getActualTemp_celsius(getActiveTool()) * 100 / getTargetTemp_celsius(getActiveTool());
 		if (IconTemp >= 100)
 			IconTemp = 100;
 		rtscheck.RTS_SndData(IconTemp, HeatPercentIcon);
-		if (getActualTemp_celsius(H0) > EXTRUDE_MINTEMP && NozzleTempStatus[0]!=0)
+		if (getActualTemp_celsius(getActiveTool()) > EXTRUDE_MINTEMP && NozzleTempStatus[0]!=0)
 		{
 			NozzleTempStatus[0] = 0;
 			rtscheck.RTS_SndData(10 * ChangeMaterialbuf[0], FilementUnit1);
@@ -445,7 +456,7 @@ void onIdle()
       SERIAL_ECHOLNPGM_P(PSTR("==Heating Done Change Filament=="));
 			rtscheck.RTS_SndData(ExchangePageBase + 65, ExchangepageAddr);
 		}
-		else if (getActualTemp_celsius(H0) >= getTargetTemp_celsius(H0) && NozzleTempStatus[2])
+		else if (getActualTemp_celsius(getActiveTool()) >= getTargetTemp_celsius(getActiveTool()) && NozzleTempStatus[2])
 		{
 			SERIAL_ECHOLNPGM("***NozzleTempStatus[2] =", (int)NozzleTempStatus[2]);
 			NozzleTempStatus[2] = 0;
@@ -815,9 +826,6 @@ void RTSSHOW::RTS_HandleData()
     case T2Offset_Y:
     case T2Offset_Z:
     case T2StepMM_E:
-    case T2PID_P:
-    case T2PID_I:
-    case T2PID_D:
     case Accel_X:
     case Accel_Y:
     case Accel_Z:
@@ -832,7 +840,9 @@ void RTSSHOW::RTS_HandleData()
     case Jerk_E:
     case RunoutToggle:
     case PowerLossToggle:
+    case FanKeyIcon:
     case LedToggle:
+    case e2Preheat:
       Checkkey = ManualSetTemp;
     break;
   }
@@ -864,7 +874,7 @@ void RTSSHOW::RTS_HandleData()
 
 
 
-  constexpr float lfrb[4] = LEVEL_CORNERS_INSET_LFRB;
+  constexpr float lfrb[4] = BED_TRAMMING_INSET_LFRB;
   SERIAL_ECHOLNPGM_P(PSTR("BeginSwitch"));
 
 	switch (Checkkey)
@@ -902,7 +912,7 @@ void RTSSHOW::RTS_HandleData()
         InforShowStatus = true;
         TPShowStatus = false;
         SERIAL_ECHOLNPGM_P(PSTR("Handle Data PrintFile 3 Setting Screen "));
-        if (getTargetFan_percent()==0)
+        if (getTargetFan_percent((fan_t)getActiveTool())==0)
           RTS_SndData(ExchangePageBase + 58, ExchangepageAddr); //exchange to 58 page, the fans off
         else
           RTS_SndData(ExchangePageBase + 57, ExchangepageAddr); //exchange to 57 page, the fans on
@@ -935,7 +945,7 @@ void RTSSHOW::RTS_HandleData()
       }
       else if (recdat.data[0] == 3)
       {
-        if (getTargetFan_percent()!=0) //turn on the fan
+        if (getTargetFan_percent((fan_t)getActiveTool())!=0) //turn on the fan
         {
           setTargetFan_percent(100, FAN0);
         }
@@ -1040,7 +1050,7 @@ void RTSSHOW::RTS_HandleData()
       }
       else if (recdat.data[0] == 1)
       {
-        if(getTargetFan_percent()==0)
+        if(getTargetFan_percent((fan_t)getActiveTool())==0)
           RTS_SndData(ExchangePageBase + 60, ExchangepageAddr); //exchange to 60 page, the fans off
         else
           RTS_SndData(ExchangePageBase + 59, ExchangepageAddr); //exchange to 59 page, the fans on
@@ -1051,7 +1061,7 @@ void RTSSHOW::RTS_HandleData()
       }
       else if (recdat.data[0] == 3)
       {
-        if (getTargetFan_percent()==0) //turn on the fan
+        if (getTargetFan_percent((fan_t)getActiveTool())==0) //turn on the fan
         {
           setTargetFan_percent(100, FAN0);
           RTS_SndData(ExchangePageBase + 57, ExchangepageAddr); //exchange to 57 page, the fans on
@@ -1064,7 +1074,7 @@ void RTSSHOW::RTS_HandleData()
       }
       else if (recdat.data[0] == 5) //PLA mode
       {
-        setTargetTemp_celsius(PREHEAT_1_TEMP_HOTEND, H0);
+        setTargetTemp_celsius(PREHEAT_1_TEMP_HOTEND, getActiveTool());
         setTargetTemp_celsius(PREHEAT_1_TEMP_BED, BED);
 
         RTS_SndData(PREHEAT_1_TEMP_HOTEND, NozzlePreheat);
@@ -1072,7 +1082,7 @@ void RTSSHOW::RTS_HandleData()
       }
       else if (recdat.data[0] == 6) //ABS mode
       {
-        setTargetTemp_celsius(PREHEAT_2_TEMP_HOTEND, H0);
+        setTargetTemp_celsius(PREHEAT_2_TEMP_HOTEND, getActiveTool());
         setTargetTemp_celsius(PREHEAT_2_TEMP_BED, BED);
 
         RTS_SndData(PREHEAT_2_TEMP_HOTEND, NozzlePreheat);
@@ -1086,6 +1096,9 @@ void RTSSHOW::RTS_HandleData()
                 setTargetFan_percent(0, (fan_t)i);
         #endif
         setTargetTemp_celsius(0.0, H0);
+        #if HAS_MULTI_HOTEND
+          setTargetTemp_celsius(0.0, H1);
+        #endif
         setTargetTemp_celsius(0.0, BED);
 
         RTS_SndData(0, NozzlePreheat);
@@ -1104,14 +1117,14 @@ void RTSSHOW::RTS_HandleData()
       {
         if (recdat.data[0] == 0)
         {
-          if (getTargetFan_percent()==0)
+          if (getTargetFan_percent((fan_t)getActiveTool())==0)
             RTS_SndData(ExchangePageBase + 58, ExchangepageAddr); //exchange to 58 page, the fans off
           else
             RTS_SndData(ExchangePageBase + 57, ExchangepageAddr); //exchange to 57 page, the fans on
         }
         else if (recdat.data[0] == 1)
         {
-          setTargetTemp_celsius(0.0, H0);
+          setTargetTemp_celsius(0.0, getActiveTool());
           RTS_SndData(0, NozzlePreheat);
         }
         else if (recdat.data[0] == 2)
@@ -1122,6 +1135,10 @@ void RTSSHOW::RTS_HandleData()
       }
       else if (recdat.addr == NozzlePreheat)
         setTargetTemp_celsius((float)recdat.data[0], H0);
+      #if HAS_MULTI_HOTEND
+        else if (recdat.addr == e2Preheat)
+          setTargetTemp_celsius((float)recdat.data[0], H1);
+      #endif
       else if (recdat.addr == BedPreheat)
         setTargetTemp_celsius((float)recdat.data[0], BED);
       else if (recdat.addr == Flowrate)
@@ -1160,6 +1177,10 @@ void RTSSHOW::RTS_HandleData()
           setAxisMaxFeedrate_mm_s((uint16_t)recdat.data[0], E0);
           setAxisMaxFeedrate_mm_s((uint16_t)recdat.data[0], E1);
         }
+        else if (recdat.addr == FanKeyIcon) {
+          setTargetFan_percent((uint16_t)recdat.data[0], (fan_t)getActiveTool());
+        }
+
 
 
       else {
@@ -1201,10 +1222,6 @@ void RTSSHOW::RTS_HandleData()
             setNozzleOffset_mm(tmp_float_handling*10, Y, E1);
           }
           else if (recdat.addr == T2Offset_Z)
-          {
-            setNozzleOffset_mm(tmp_float_handling*10, Z, E1);
-          }
-          else if (recdat.addr == T2PID_P)
           {
             setNozzleOffset_mm(tmp_float_handling*10, Z, E1);
           }
@@ -1345,6 +1362,9 @@ void RTSSHOW::RTS_HandleData()
         #if HAS_MULTI_HOTEND
           rtscheck.RTS_SndData(getActualTemp_celsius(H1), e2Temp);
           rtscheck.RTS_SndData(getTargetTemp_celsius(H1), e2Preheat);
+        #else
+          rtscheck.RTS_SndData(0, e2Temp);
+          rtscheck.RTS_SndData(0, e2Preheat);
         #endif
         delay_ms(2);
         RTS_SndData(ExchangePageBase + 65, ExchangepageAddr);
@@ -1459,7 +1479,7 @@ void RTSSHOW::RTS_HandleData()
 
         case 6: // Assitant Level ,  Centre 1
         {
-          setAxisPosition_mm(LEVEL_CORNERS_Z_HOP, (axis_t)Z);
+          setAxisPosition_mm(BED_TRAMMING_Z_HOP, (axis_t)Z);
           setAxisPosition_mm(X_CENTER, (axis_t)X);
           setAxisPosition_mm(Y_CENTER, (axis_t)Y);
           waitway = 6;
@@ -1467,7 +1487,7 @@ void RTSSHOW::RTS_HandleData()
         }
         case 7: // Assitant Level , Front Left 2
         {
-          setAxisPosition_mm(LEVEL_CORNERS_Z_HOP, (axis_t)Z);
+          setAxisPosition_mm(BED_TRAMMING_Z_HOP, (axis_t)Z);
           setAxisPosition_mm((X_MIN_BED + lfrb[0]), (axis_t)X);
           setAxisPosition_mm((Y_MIN_BED + lfrb[1]), (axis_t)Y);
           waitway = 6;
@@ -1475,7 +1495,7 @@ void RTSSHOW::RTS_HandleData()
         }
         case 8: // Assitant Level , Front Right 3
         {
-          setAxisPosition_mm(LEVEL_CORNERS_Z_HOP, (axis_t)Z);
+          setAxisPosition_mm(BED_TRAMMING_Z_HOP, (axis_t)Z);
           setAxisPosition_mm((X_MAX_BED - lfrb[2]), (axis_t)X);
           setAxisPosition_mm((Y_MIN_BED + lfrb[1]), (axis_t)Y);
           waitway = 6;
@@ -1483,7 +1503,7 @@ void RTSSHOW::RTS_HandleData()
         }
         case 9: // Assitant Level , Back Right 4
         {
-          setAxisPosition_mm(LEVEL_CORNERS_Z_HOP, (axis_t)Z);
+          setAxisPosition_mm(BED_TRAMMING_Z_HOP, (axis_t)Z);
           setAxisPosition_mm((X_MAX_BED - lfrb[2]), (axis_t)X);
           setAxisPosition_mm((Y_MAX_BED - lfrb[3]), (axis_t)Y);
           waitway = 6;
@@ -1491,7 +1511,7 @@ void RTSSHOW::RTS_HandleData()
         }
         case 10: // Assitant Level , Back Left 5
         {
-          setAxisPosition_mm(LEVEL_CORNERS_Z_HOP, (axis_t)Z);
+          setAxisPosition_mm(BED_TRAMMING_Z_HOP, (axis_t)Z);
           setAxisPosition_mm((X_MIN_BED + lfrb[0]), (axis_t)X);
           setAxisPosition_mm((Y_MAX_BED - lfrb[3]), (axis_t)Y);
           waitway = 6;
@@ -1688,7 +1708,7 @@ void RTSSHOW::RTS_HandleData()
       unsigned int IconTemp;
       if (recdat.addr == Exchfilement)
       {
-        if (getActualTemp_celsius(H0) < EXTRUDE_MINTEMP && recdat.data[0] < 5)
+        if (getActualTemp_celsius(getActiveTool()) < EXTRUDE_MINTEMP && recdat.data[0] < 5)
         {
           RTS_SndData((int)EXTRUDE_MINTEMP, 0x1020);
           delay_ms(5);
@@ -1723,8 +1743,8 @@ void RTSSHOW::RTS_HandleData()
             NozzleTempStatus[0] = 1;
             //InforShowoStatus = true;
 
-            setTargetTemp_celsius((PREHEAT_1_TEMP_HOTEND+10), H0);
-            IconTemp = getActualTemp_celsius(H0) * 100 / getTargetTemp_celsius(H0);
+            setTargetTemp_celsius((PREHEAT_1_TEMP_HOTEND+10), getActiveTool());
+            IconTemp = getActualTemp_celsius(getActiveTool()) * 100 / getTargetTemp_celsius(getActiveTool());
             if (IconTemp >= 100)
               IconTemp = 100;
             RTS_SndData(IconTemp, HeatPercentIcon);
@@ -1734,6 +1754,9 @@ void RTSSHOW::RTS_HandleData()
             #if HAS_MULTI_HOTEND
               rtscheck.RTS_SndData(getActualTemp_celsius(H1), e2Temp);
               rtscheck.RTS_SndData(getTargetTemp_celsius(H1), e2Preheat);
+            #else
+              rtscheck.RTS_SndData(0, e2Temp);
+              rtscheck.RTS_SndData(0, e2Preheat);
             #endif
             delay_ms(5);
             RTS_SndData(ExchangePageBase + 68, ExchangepageAddr);
@@ -2138,6 +2161,7 @@ void SetTouchScreenConfiguration() {
   #if ANY(MachineCR10Smart, MachineCR10SmartPro )
     cfg_bits |= 1UL << 0; // Portrait Mode or 800x480 display has 0 point rotated 90deg from 480x272 display
   #endif
+
 
 
   #if ENABLED(DWINOS_4)
