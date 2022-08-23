@@ -690,7 +690,7 @@
 #elif ANY(MachineEnder3V2, MachineEnder3S1) && ANY(FORCEV2DISPLAY, SKRE3Turbo)
   #define LCD_SERIAL_PORT 1
   #define LCD_BAUDRATE 115200
-  #define SERIAL_CATCHALL -1
+  //#define SERIAL_CATCHALL -1
 #elif ANY(MachineCR10SPro, MachineCRX, MachineEnder5Plus, MachineCR10Max, MachineCR5) && NONE(GraphicLCD, OrigLCD, MachineEnder3V2, MachineEnder3S1, Creality422, Creality427, MachineEnder6, FORCEV2DISPLAY)
   #define LCD_SERIAL_PORT 2
   #define LCD_BAUDRATE 115200
@@ -698,7 +698,7 @@
 #elif ANY(MachineCR10SPro, MachineCRX, MachineEnder5Plus, MachineCR5, MachineCR10Max, MachineEnder6, Creality422, Creality427, MachineSermoonD1, MachineEnder3Touchscreen, MachineCR6, MachineCR6Max, FORCEV2DISPLAY) && NONE(GraphicLCD, OrigLCD)
   #define LCD_SERIAL_PORT 3
   #define LCD_BAUDRATE 115200
-  #define SERIAL_CATCHALL 1
+  //#define SERIAL_CATCHALL 1
 #elif ENABLED(MachineCR10Smart)
   #define LCD_SERIAL_PORT 3
   #define LCD_BAUDRATE 115200
@@ -4064,9 +4064,9 @@
 // If you have a speaker that can produce tones, enable it here.
 // By default Marlin assumes you have a buzzer with a fixed frequency.
 //
-#if ANY(MachineCR6, MachineCR6Max, MachineEnder3Touchscreen)
+//#if ANY(MachineCR6, MachineCR6Max, MachineEnder3Touchscreen)
   #define SPEAKER
-#endif
+//#endif
 
 //
 // The duration and frequency for the UI feedback sound.
@@ -4750,9 +4750,9 @@
 // Use software PWM to drive the fan, as for the heaters. This uses a very low frequency
 // which is not as annoying as with the hardware PWM. On the other hand, if this frequency
 // is too low, you should also increment SOFT_PWM_SCALE.
-#if ANY(SKRPRO11, SKRMiniE3V2, MachineEnder6, MachineEnder7, Creality427, Creality422, SKR_CR6, CR6_452, MachineCR30, MachineCR6, MachineCR6Max, MachineCR10Smart, MachineCR10SmartPro, MachineEnder3S1, MachineEnder2Pro)
+//#if ANY(SKRPRO11, SKRMiniE3V2, MachineEnder6, MachineEnder7, Creality427, Creality422, SKR_CR6, CR6_452, MachineCR30, MachineCR6, MachineCR6Max, MachineCR10Smart, MachineCR10SmartPro, MachineEnder3S1, MachineEnder2Pro)
   #define FAN_SOFT_PWM
-#endif
+//#endif
 // Incrementing this by 1 will double the software PWM frequency,
 // affecting heaters, and the fan if FAN_SOFT_PWM is enabled.
 // However, control resolution will be halved for each increment;
