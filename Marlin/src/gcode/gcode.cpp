@@ -934,7 +934,7 @@ void GcodeSuite::process_parsed_command(const bool no_ok/*=false*/) {
         case 591: M591(); break;                                  // M591 Configure filament runout detection
       #endif
 
-      #if ENABLED(INPUT_SHAPING)
+      #if HAS_SHAPING
         case 593: M593(); break;                                  // M593: Set Input Shaping parameters
       #endif
 
