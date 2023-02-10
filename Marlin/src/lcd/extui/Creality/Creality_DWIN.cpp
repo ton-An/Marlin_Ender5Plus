@@ -780,7 +780,7 @@ void RTSSHOW::WriteVariable(uint16_t adr, long value) {
   WriteVariable(adr, static_cast<const void*>(&tmp), sizeof(long));
 }
 
-void RTSSHOW::WriteVariable(uint16_t adr, const void* values, uint8_t valueslen, bool isstr=false, char fillChar = ' ') {
+void RTSSHOW::WriteVariable(uint16_t adr, const void* values, uint8_t valueslen, bool isstr, char fillChar) {
   const char* myvalues = static_cast<const char*>(values);
   bool strend = !myvalues;
   DWIN_SERIAL.write(FHONE);
