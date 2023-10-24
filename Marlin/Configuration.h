@@ -12,7 +12,7 @@
 //#define MachineCRX
 //#define MachineCRXPro
 //#define MachineCR10Max
-//#define MachineEnder5Plus
+#define MachineEnder5Plus // ToDo: Changed
 //#define MachineCR6
 //#define MachineCR6Max
 //#define MachineEnder6
