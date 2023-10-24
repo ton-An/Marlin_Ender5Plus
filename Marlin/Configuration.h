@@ -3017,16 +3017,16 @@
     #define Y_MAX_POS 225
     #define ClipClearance 15
   #elif ENABLED(MachineEnder5Plus)
-    #define Y_BED_SIZE 360
+    #define Y_BED_SIZE 330
     #define Z_MAX_POS 400
     #if ENABLED(E3DHemera)
-      #define X_BED_SIZE 352
-      #define X_MAX_POS 352
+      #define X_BED_SIZE 330
+      #define X_MAX_POS 330
     #else
       #define X_BED_SIZE 360
       #define X_MAX_POS 360
     #endif
-    #define Y_MAX_POS 360
+    #define Y_MAX_POS 330
     #define ClipClearance 25
   #elif ENABLED(MachineCR5)
     #define X_BED_SIZE 300
