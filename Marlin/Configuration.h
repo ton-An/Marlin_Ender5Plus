@@ -96,7 +96,7 @@
  //#define BondtechBMG
  //#define BondtechLGX
  //#define E3DTitan
- //#define E3DHemera
+ #define E3DHemera // ToDo: Changed
  //#define CrealityTitan
  //#define DDXExtruderKit
  //#define SpriteExtruder
