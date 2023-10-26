@@ -224,7 +224,7 @@
 //#define SKR_2130
 //#define SKR_UART // Configure SKR board with drivers in UART mode or SPI for TMC2130
 //#define SKR_ReverseSteppers // Some users reported directions backwards than others on SKR with various drivers.
-// #define DualZ // Uses 5th driver on CRX or SKR boards as Z2
+#define DualZ // Uses 5th driver on CRX or SKR boards as Z2
 
 //#define PowerShutoffKit
  /*
