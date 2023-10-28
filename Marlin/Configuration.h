@@ -3022,16 +3022,16 @@
     #define Y_MAX_POS 225
     #define ClipClearance 15
   #elif ENABLED(MachineEnder5Plus)
-    #define Y_BED_SIZE 300 //ToDo: changed
+    #define Y_BED_SIZE 350 //ToDo: changed
     #define Z_MAX_POS 400
     #if ENABLED(E3DHemera)
-      #define X_BED_SIZE 300 // ToDo: changed
-      #define X_MAX_POS 300 // ToDo: changed
+      #define X_BED_SIZE 335 // ToDo: changed
+      #define X_MAX_POS 335 // ToDo: changed
     #else
       #define X_BED_SIZE 360
       #define X_MAX_POS 360
     #endif
-    #define Y_MAX_POS 300 //ToDo: changed
+    #define Y_MAX_POS 350 //ToDo: changed
     #define ClipClearance 25
   #elif ENABLED(MachineCR5)
     #define X_BED_SIZE 300
