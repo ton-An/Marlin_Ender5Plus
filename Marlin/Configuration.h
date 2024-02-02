@@ -75,7 +75,7 @@
    Creality Mounting assumes bolt-on kit
 */
 //#define HotendStock
-//#define HotendE3D
+#define HotendE3D //ToDo: changed (was that right?)
 //#define HotendMosquito
 
 //Enable this if you have an all metal hotend capable of 300c
@@ -104,7 +104,7 @@
 //Stepper09Deg // 0.9 degree per step motor on the extruder - doubles ESteps
 
  //#define MicroswissDirectDrive
- //#define DirectDrive // Any direct drive extruder, reduces filament change lengths
+ #define DirectDrive // Any direct drive extruder, reduces filament change lengths //ToDo: changed
 
 /*
    Choose bed type below. If you have an extenrally controlled
@@ -122,14 +122,14 @@
 //#define ABL_EZABL // TH3D EZABL or Any NO Sensor
 //#define ABL_EZABL12MM
 //#define ABL_NCSW //Creality ABL or Any NC Sensor
-//#define ABL_BLTOUCH
+//#define ABL_BLTOUCH //ToDo: changed back (seems to be configured already)
 //#define ABL_TOUCH_MI // Uncomment ABL_TOUCH_MI to use Touch-MI sensor by hotends.fr
 
 //#define Creality42XUseZMin // Use ZMin pin for probe on Creality 422 and 427 boards
 
 //#define CREALITY_ABL_MOUNT //Using creality ABL mount
 //#define E3D_DUALFAN_MOUNT // Using HD Modular mount as above with 2 5015 blowers and sensor on the right
-//#define E3D_PROBEMOUNT_LEFT // Default is probe mounted to the right for E3D. Set this to invert.
+#define E3D_PROBEMOUNT_LEFT // Default is probe mounted to the right for E3D. Set this to invert. //ToDo: changed
 
 
 /**
@@ -174,7 +174,7 @@
    Melzi board users may only select ABL_BI for bilinear leveling
    If a probe is enabled and nothing selected here, defaults to Bilinear
 */
-//#define ABL_BI
+#define ABL_BI // ToDo: Changed
 //#define ABL_UBL
 
 /*
@@ -191,7 +191,7 @@
 
 //#define OriginalCrealitySquareBoard
 //#define MachineCR10Orig // Forces Melzi board
-//#define Melzi_To_SBoardUpgrade // Upgrade Melzi board to 10S board
+//#define Melzi_To_SBoardUpgrade // Upgrade Melzi board to 10S board  
 //#define Creality422
 //#define Creality427
 //define CR6_452 // Older recalled Creality 452 motherboard
@@ -224,7 +224,7 @@
 //#define SKR_2130
 //#define SKR_UART // Configure SKR board with drivers in UART mode or SPI for TMC2130
 //#define SKR_ReverseSteppers // Some users reported directions backwards than others on SKR with various drivers.
-//#define DualZ // Uses 5th driver on CRX or SKR boards as Z2
+#define DualZ // Uses 5th driver on CRX or SKR boards as Z2
 
 //#define PowerShutoffKit
  /*
@@ -1968,8 +1968,8 @@
 // extra connectors. Leave undefined any used for non-endstop and non-probe purposes.
 #if ANY(MachineEnder5, MachineEnder5Plus, MachineEnder6)
   #define USE_ZMIN_PLUG
-  #define USE_XMAX_PLUG
-  #define USE_YMAX_PLUG
+  #define USE_XMIN_PLUG // ToDo: changed
+  #define USE_YMIN_PLUG // ToDo: changed
 #else
   #define USE_XMIN_PLUG
   #if ENABLED(MachineEnder7)
@@ -2629,6 +2629,9 @@
   #endif
 #endif
 
+#define NOZZLE_TO_PROBE_OFFSET { 34, 2, 0  } //ToDo: changed
+
+
 
 // Most probes should stay away from the edges of the bed, but
 // with NOZZLE_AS_PROBE this can be negative for a wider probing area.
@@ -2874,7 +2877,9 @@
     #endif
   #endif
   #if ANY(MachineEnder5Plus, MachineCR2020, MachineEnder6, MachineSermoonD1, MachineEnder7)
-    #define INVERT_Z_DIR false
+    #define INVERT_X_DIR true //ToDo: Changed
+    #define INVERT_Y_DIR true //ToDo: Changed
+    #define INVERT_Z_DIR false 
   #else
     #define INVERT_Z_DIR true
   #endif
@@ -2882,7 +2887,7 @@
     #define INVERT_E0_DIR true
     #define INVERT_E1_DIR false
   #else
-    #define INVERT_E0_DIR false
+    #define INVERT_E0_DIR true //ToDo: changed
     #define INVERT_E1_DIR true
   #endif
 #endif
@@ -2930,8 +2935,8 @@
 // Direction of endstops when homing; 1=MAX, -1=MIN
 // :[-1,1]
 #if ANY(MachineEnder5, MachineEnder5Plus, MachineEnder6)
-  #define X_HOME_DIR 1
-  #define Y_HOME_DIR 1
+  #define X_HOME_DIR -1 //ToDo: changed
+  #define Y_HOME_DIR -1 //ToDo: changed
   #define Z_HOME_DIR -1
 #else
   #define X_HOME_DIR -1
@@ -3017,16 +3022,16 @@
     #define Y_MAX_POS 225
     #define ClipClearance 15
   #elif ENABLED(MachineEnder5Plus)
-    #define Y_BED_SIZE 350 // ToDo: Changed from 360 to 330
+    #define Y_BED_SIZE 350 // ToDo: Changed from 360
     #define Z_MAX_POS 400
     #if ENABLED(E3DHemera)
-      #define X_BED_SIZE 335 // ToDo: Changed from 352 to 330
-      #define X_MAX_POS 335 // ToDo: Changed from 352 to 330
+      #define X_BED_SIZE 335 // ToDo: Changed from 352
+      #define X_MAX_POS 335 // ToDo: Changed from 352 
     #else
       #define X_BED_SIZE 360
       #define X_MAX_POS 360
     #endif
-    #define Y_MAX_POS 350 // ToDo: Changed from 360 to 330
+    #define Y_MAX_POS 350 // ToDo: Changed from 360 
     #define ClipClearance 25
   #elif ENABLED(MachineCR5)
     #define X_BED_SIZE 300
